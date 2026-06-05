@@ -1,0 +1,15 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install Python packages
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Copy dbt project
+COPY dbt_project.yml packages.yml profiles.yml ./
+COPY models/ models/
+
+# Run transformation
+CMD ["sh", "-c", "dbt deps && dbt run --select data-raw"]

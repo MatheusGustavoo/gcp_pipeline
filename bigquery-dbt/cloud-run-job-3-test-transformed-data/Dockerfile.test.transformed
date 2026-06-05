@@ -1,0 +1,16 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install Python packages
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Copy dbt project (needed for test definitions)
+COPY dbt_project.yml packages.yml profiles.yml ./
+COPY models/ models/
+COPY tests/ tests/
+
+# Run tests ( the command is assuming that transformed_data table exists, so make sure to run cloud-run-job-2-transform-data first)
+CMD ["sh", "-c", "dbt deps && dbt test --select data-transformed"]

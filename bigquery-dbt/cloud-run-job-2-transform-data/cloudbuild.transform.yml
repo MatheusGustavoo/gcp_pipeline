@@ -1,0 +1,22 @@
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-f", "Dockerfile.transform", "-t", "gcr.io/$PROJECT_ID/dbt-transform", "."]
+  
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$PROJECT_ID/dbt-transform"]
+  
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "gcloud"
+    args: 
+      - "run"
+      - "jobs"
+      - "deploy"
+      - "dbt-transform-job"
+      - "--image=gcr.io/$PROJECT_ID/dbt-transform"
+      - "--region=europe-west1"
+      - "--memory=2Gi"
+      - "--max-retries=3"
+      - "--task-timeout=1800"
+
+images:
+  - "gcr.io/$PROJECT_ID/dbt-transform"

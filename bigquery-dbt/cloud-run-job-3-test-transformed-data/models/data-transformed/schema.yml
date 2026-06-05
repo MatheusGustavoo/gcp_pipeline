@@ -1,0 +1,145 @@
+version: 2
+
+sources:
+  - name: financial_data_dev_source 
+    description: "Source data from the financial_data_dev dataset in BigQuery"
+    database: your-project-id 
+    schema: financial_data_dev  
+    tables:
+      - name: transformed_data 
+        description: "Transformed financial data"
+        columns:
+          - name: merchant_id
+            description: "Merchant identifier"
+            tests:
+              - not_null
+
+          - name: customer_id
+            description: "Customer identifier"
+            tests:
+              - not_null
+
+          - name: business_category
+            description: "Normalized business category (uppercase)"
+            tests:
+              - not_null
+              - accepted_values:
+                  arguments:
+                    values: ['RETAIL', 'WHOLESALE', 'ONLINE', 'SUBSCRIPTION', 'B2B', 'MARKETPLACE']
+
+          - name: currency_code
+            description: "ISO currency code (uppercase)"
+            tests:
+              - not_null
+              - accepted_values:
+                  arguments:
+                    values: ['EUR', 'USD', 'GBP', 'PLN', 'SEK', 'NOK']
+
+          - name: reference_token
+            description: "Unique reference token"
+            tests:
+              - not_null
+              - unique
+
+          - name: gross_amount
+            description: "Gross transaction amount before fees"
+            tests:
+              - not_null
+              - dbt_utils.expression_is_true:
+                  arguments:
+                    expression: ">= 0"
+              - dbt_expectations.expect_column_values_to_be_between:
+                  arguments:
+                    min_value: 0
+                    max_value: 1000000
+                  config:
+                    severity: warn
+
+          - name: fee_amount
+            description: "Transaction fee (0-3% of gross amount)"
+            tests:
+              - not_null
+              - dbt_utils.expression_is_true:
+                  arguments:
+                    expression: ">= 0"
+
+          - name: tax_amount
+            description: "Calculated tax (10% of gross amount)"
+            tests:
+              - not_null
+              - dbt_utils.expression_is_true:
+                  arguments:
+                    expression: ">= 0"
+
+          - name: calculated_net
+            description: "Calculated net for validation purposes"
+            tests:
+              - not_null
+
+          - name: final_status
+            description: "Simplified transaction status"
+            tests:
+              - not_null
+              - accepted_values:
+                  arguments:
+                    values: ['Completed', 'Failed', 'Reversed', 'Cancelled', 'Pending', 'Unknown']
+
+          - name: fee_percentage
+            description: "Fee as percentage of gross amount"
+            tests:
+              - not_null
+              - dbt_expectations.expect_column_values_to_be_between:
+                  arguments:
+                    min_value: 0
+                    max_value: 5
+                  config:
+                    severity: warn
+
+          - name: currency_region
+            description: "Geographic region based on currency"
+            tests:
+              - not_null
+              - accepted_values:
+                  arguments:
+                    values: ['Europe', 'North America', 'Nordic/Eastern Europe', 'Other']
+
+          - name: commerce_type
+            description: "High-level commerce category"
+            tests:
+              - not_null
+              - accepted_values:
+                  arguments:
+                    values: ['Physical Commerce', 'Digital Commerce', 'Business Services', 'Other']
+
+          - name: net_amount_mismatch_flag
+            description: "Flag for net amount calculation discrepancies"
+            tests:
+              - not_null
+
+          - name: fee_exceeds_amount_flag
+            description: "Flag for fee exceeding gross amount (data quality issue)"
+            tests:
+              - not_null
+
+          - name: dbt_loaded_at
+            description: "Timestamp when record was loaded by dbt"
+            tests:
+              - not_null
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "fee_percentage <= 5.0 OR gross_amount = 0"
+              config:
+                severity: warn
+
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "gross_amount >= 0 AND fee_amount >= 0"
+              config:
+                severity: error
+
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "net_amount <= gross_amount"
+              config:
+                severity: error

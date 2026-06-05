@@ -1,0 +1,14 @@
+version: 2
+
+sources:
+  - name: data_raw
+    description: "Source data from staging dataset"
+    schema: staging 
+    tables:
+      - name: raw_data 
+        description: "Raw financial transaction data"
+        columns:
+          - name: ID1
+            description: "Transaction identifier"
+            tests:
+              - not_null
