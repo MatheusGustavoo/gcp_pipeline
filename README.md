@@ -1,4 +1,4 @@
-# ELT Financial Data Pipeline on GCP
+# ELT Data Pipeline on GCP
 
 A production-grade ELT pipeline built on **Google Cloud Platform**, processing transaction data through automated quality checks with dbt transformations, and data governance using Dataplex.
 
