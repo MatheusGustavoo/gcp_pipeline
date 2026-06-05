@@ -14,7 +14,7 @@ AUTH_SCOPE = "https://www.googleapis.com/auth/cloud-platform"
 CREDENTIALS, _ = google.auth.default(scopes=[AUTH_SCOPE])
 
 dag_trigger_rules = [
-    { 'dag': 'elt_financial_data_pipeline', 'regex': 'financial_data' }
+    { 'dag': 'elt_bank_data_pipeline', 'regex': 'bank_data' }
 ]
 
 def trigger_dag(request):

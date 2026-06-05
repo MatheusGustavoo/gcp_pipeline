@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 
 PROJECT_ID = 'your-project-id'
 REGION = 'europe-west1' # Assuming the same region as other DAGs
-DATASET_ID = 'financial_data_dev'
+DATASET_ID = 'bank_data_dev'
 TABLE_ID = 'transformed_data'
  
 # Unique IDs for the scans

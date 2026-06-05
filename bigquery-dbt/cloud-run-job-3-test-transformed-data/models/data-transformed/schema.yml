@@ -1,10 +1,10 @@
 version: 2
 
 sources:
-  - name: financial_data_dev_source 
-    description: "Source data from the financial_data_dev dataset in BigQuery"
+  - name: bank_data_dev_source 
+    description: "Source data from the bank_data_dev dataset in BigQuery"
     database: your-project-id 
-    schema: financial_data_dev  
+    schema: bank_data_dev  
     tables:
       - name: transformed_data 
         description: "Transformed financial data"

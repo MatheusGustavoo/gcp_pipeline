@@ -73,7 +73,7 @@ def move_files_to_proceed_folder(ti, **kwargs):
         logging.info(f"Moved {obj} to {destination_object}")
 
 with DAG(
-    'elt_financial_data_pipeline',
+    'elt_bank_data_pipeline',
     default_args=default_args,
     description='DBT pipeline with task groups and Cloud Run job status',
     start_date=datetime(2024, 1, 1),
@@ -86,7 +86,7 @@ with DAG(
     list_gcs_objects = GCSListObjectsOperator(
         task_id='list_gcs_objects',
         bucket='elt-dev',
-        prefix='financial_data',
+        prefix='bank_data',
         delimiter='/',
         gcp_conn_id='google_cloud_default',
     )

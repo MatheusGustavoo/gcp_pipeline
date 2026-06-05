@@ -1,7 +1,7 @@
 bigquery-dbt:
   outputs:
     dev:
-      dataset: financial_data_dev
+      dataset: bank_data_dev
       job_execution_timeout_seconds: 300
       job_retries: 1
       location: EU
